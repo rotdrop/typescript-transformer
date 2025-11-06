@@ -53,7 +53,7 @@ class TypeDefinitionWriter implements Writer
                 continue;
             }
 
-            $namespace = str_replace('\\', '.', $type->reflection->getNamespaceName());
+            $namespace = implode('.', $type->getNamespaceSegments());
 
             if (empty($namespace)) {
                 $rootTypes[] = $type;
