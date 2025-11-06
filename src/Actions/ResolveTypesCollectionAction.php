@@ -34,12 +34,13 @@ class ResolveTypesCollectionAction
         $collection = new TypesCollection();
 
         $paths = $this->config->getAutoDiscoverTypesPaths();
+        $exclude = $this->config->getAutoDiscoverExcludePaths();
 
         if (empty($paths)) {
             throw NoAutoDiscoverTypesPathsDefined::create();
         }
 
-        foreach ($this->resolveIterator($paths) as $class) {
+        foreach ($this->resolveIterator($paths, $exclude) as $class) {
             $transformedType = $this->resolveTransformedType($class);
 
             if ($transformedType === null) {
@@ -52,14 +53,20 @@ class ResolveTypesCollectionAction
         return $collection;
     }
 
-    protected function resolveIterator(array $paths): Generator
+    protected function resolveIterator(array $paths, array $exclude): Generator
     {
         $paths = array_map(
             fn (string $path) => is_dir($path) ? $path : dirname($path),
             $paths
         );
 
-        foreach ($this->finder->in($paths) as $fileInfo) {
+        foreach ($this->finder->files()->in($paths) as $fileInfo) {
+            $path = $fileInfo->getPathname();
+            foreach ($exclude as $dir) {
+                if (str_starts_with($path, $dir)) {
+                    continue 2;
+                }
+            }
             try {
                 $classes = (new ResolveClassesInPhpFileAction())->execute($fileInfo);
 
@@ -67,6 +74,8 @@ class ResolveTypesCollectionAction
                     yield $name => new ReflectionClass($name);
                 }
             } catch (Exception $exception) {
+                echo $path . PHP_EOL;
+                throw $exception;
             }
         }
     }
