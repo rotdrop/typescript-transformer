@@ -37,12 +37,15 @@ class ResolveClassesInPhpFileAction
             fn ($node) => $node instanceof Class_ || $node instanceof Interface_ || $node instanceof Trait_ || $node instanceof Enum_
         );
 
-        return array_map(function (Class_|Interface_|Trait_|Enum_ $item) use ($namespace) {
+        return array_filter(array_map(function (Class_|Interface_|Trait_|Enum_ $item) use ($namespace) {
+            if (empty($item->name)) {
+                return null;
+            }
             $className = $namespace instanceof Namespace_
                 ? "{$namespace->name}\\{$item->name}"
                 : $item->name;
 
             return preg_replace('/^\\\*/', '', (string) $className);
-        }, $classes);
+        }, $classes));
     }
 }
