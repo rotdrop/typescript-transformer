@@ -5,6 +5,7 @@ namespace Spatie\TypeScriptTransformer\Transformers;
 use ReflectionClass;
 use Spatie\Enum\Enum;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class SpatieEnumTransformer implements Transformer
@@ -13,7 +14,7 @@ class SpatieEnumTransformer implements Transformer
     {
     }
 
-    public function transform(ReflectionClass $class, string $name): ?TransformedType
+    public function transform(ReflectionClass $class, string $name): null|TransformedType|TypesCollection
     {
         if ($class->isSubclassOf(Enum::class) === false) {
             return null;

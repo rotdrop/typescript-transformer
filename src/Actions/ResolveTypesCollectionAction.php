@@ -47,7 +47,13 @@ class ResolveTypesCollectionAction
                 continue;
             }
 
-            $collection[] = $transformedType;
+            if ($transformedType instanceof TypesCollection) {
+                foreach ($transformedType as $key => $type) {
+                    $collection[$key] = $type;
+                }
+            } else {
+                $collection[] = $transformedType;
+            }
         }
 
         return $collection;
@@ -80,7 +86,7 @@ class ResolveTypesCollectionAction
         }
     }
 
-    protected function resolveTransformedType(ReflectionClass $class): ?TransformedType
+    protected function resolveTransformedType(ReflectionClass $class): null|TransformedType|TypesCollection
     {
         foreach ($this->collectors as $collector) {
             $transformedType = $collector->getTransformedType($class);

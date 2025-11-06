@@ -10,7 +10,7 @@ use Spatie\TypeScriptTransformer\TypeReflectors\ClassTypeReflector;
 
 class EnumCollector extends DefaultCollector
 {
-    public function getTransformedType(ReflectionClass $class): ?TransformedType
+    public function getTransformedType(ReflectionClass $class): null|TransformedType|TypesCollectionx
     {
         if (! $this->shouldCollect($class)) {
             return null;

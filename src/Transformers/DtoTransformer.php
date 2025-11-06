@@ -8,6 +8,7 @@ use Spatie\TypeScriptTransformer\Attributes\Hidden;
 use Spatie\TypeScriptTransformer\Attributes\Optional;
 use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 use Spatie\TypeScriptTransformer\TypeProcessors\DtoCollectionTypeProcessor;
 use Spatie\TypeScriptTransformer\TypeProcessors\ReplaceDefaultsTypeProcessor;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
@@ -23,7 +24,7 @@ class DtoTransformer implements Transformer
         $this->config = $config;
     }
 
-    public function transform(ReflectionClass $class, string $name): ?TransformedType
+    public function transform(ReflectionClass $class, string $name): null|TransformedType|TypesCollection
     {
         if (! $this->canTransform($class)) {
             return null;

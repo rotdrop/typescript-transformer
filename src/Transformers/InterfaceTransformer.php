@@ -6,10 +6,11 @@ use ReflectionClass;
 use ReflectionMethod;
 use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 
 class InterfaceTransformer extends DtoTransformer implements Transformer
 {
-    public function transform(ReflectionClass $class, string $name): ?TransformedType
+    public function transform(ReflectionClass $class, string $name): null|TransformedType|TypesCollection
     {
         if (! $class->isInterface()) {
             return null;

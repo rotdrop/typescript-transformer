@@ -6,6 +6,7 @@ use ReflectionClass;
 use ReflectionEnum;
 use ReflectionEnumBackedCase;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class EnumTransformer implements Transformer
@@ -14,7 +15,7 @@ class EnumTransformer implements Transformer
     {
     }
 
-    public function transform(ReflectionClass $class, string $name): ?TransformedType
+    public function transform(ReflectionClass $class, string $name): null|TransformedType|TypesCollection
     {
         if (! $class->isEnum()) {
             return null;

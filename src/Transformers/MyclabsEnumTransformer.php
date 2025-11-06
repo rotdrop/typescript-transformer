@@ -5,6 +5,7 @@ namespace Spatie\TypeScriptTransformer\Transformers;
 use MyCLabs\Enum\Enum;
 use ReflectionClass;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class MyclabsEnumTransformer implements Transformer
@@ -13,7 +14,7 @@ class MyclabsEnumTransformer implements Transformer
     {
     }
 
-    public function transform(ReflectionClass $class, string $name): ?TransformedType
+    public function transform(ReflectionClass $class, string $name): null|TransformedType|TypesCollection
     {
         if ($class->isSubclassOf(Enum::class) === false) {
             return null;
