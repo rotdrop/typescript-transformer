@@ -35,7 +35,7 @@ class TypeScriptTransformerConfig
 
     public static function create(): self
     {
-        return new self();
+        return new static();
     }
 
     public function autoDiscoverTypes(string ...$paths): self
