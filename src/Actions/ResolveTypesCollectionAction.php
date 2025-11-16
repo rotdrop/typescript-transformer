@@ -35,12 +35,13 @@ class ResolveTypesCollectionAction
 
         $paths = $this->config->getAutoDiscoverTypesPaths();
         $exclude = $this->config->getAutoDiscoverExcludePaths();
+        $excludeRegExp = $this->config->getAutoDiscoverExcludeRegExp();
 
         if (empty($paths)) {
             throw NoAutoDiscoverTypesPathsDefined::create();
         }
 
-        foreach ($this->resolveIterator($paths, $exclude) as $class) {
+        foreach ($this->resolveIterator($paths, $exclude, $excludeRegExp) as $class) {
             $transformedType = $this->resolveTransformedType($class);
 
             if ($transformedType === null) {
@@ -59,7 +60,7 @@ class ResolveTypesCollectionAction
         return $collection;
     }
 
-    protected function resolveIterator(array $paths, array $exclude): Generator
+    protected function resolveIterator(array $paths, array $exclude, string $excludeRegExp): Generator
     {
         $paths = array_map(
             fn (string $path) => is_dir($path) ? $path : dirname($path),
@@ -71,6 +72,11 @@ class ResolveTypesCollectionAction
             foreach ($exclude as $dir) {
                 if (str_starts_with($path, $dir)) {
                     continue 2;
+                }
+            }
+            if (!empty($excludeRegExp)) {
+                if (preg_match($excludeRegExp, $path)) {
+                    continue;
                 }
             }
             try {

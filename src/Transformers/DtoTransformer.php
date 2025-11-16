@@ -41,7 +41,7 @@ class DtoTransformer implements Transformer
         return TransformedType::create(
             $class,
             $name,
-            "{" . PHP_EOL . $type . "}",
+            "{" . PHP_EOL . $type . "  }",
             $missingSymbols
         );
     }
@@ -85,8 +85,8 @@ class DtoTransformer implements Transformer
                 $propertyName = $this->transformPropertyName($property, $missingSymbols);
 
                 return $isOptional
-                    ? "{$carry}{$propertyName}?: {$transformed};" . PHP_EOL
-                    : "{$carry}{$propertyName}: {$transformed};" . PHP_EOL;
+                    ? "{$carry}    {$propertyName}?: {$transformed};" . PHP_EOL
+                    : "{$carry}    {$propertyName}: {$transformed};" . PHP_EOL;
             },
             ''
         );

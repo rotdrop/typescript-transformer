@@ -17,6 +17,8 @@ class TypeScriptTransformerConfig
 
     private array $autoDiscoverExcludePaths = [];
 
+    private ?string $autoDiscoverExcludeRegExp = null;
+
     private array $transformers = [];
 
     private array $collectors = [DefaultCollector::class];
@@ -45,9 +47,16 @@ class TypeScriptTransformerConfig
         return $this;
     }
 
-    public function autoDiscoverExclude(string ...$paths): self
+    public function autoDiscoverExcludePaths(string ...$paths): self
     {
         $this->autoDiscoverExcludePaths = array_merge($this->autoDiscoverExcludePaths, $paths);
+
+        return $this;
+    }
+
+    public function autoDiscoverExcludeRegExp(string $regExp): self
+    {
+        $this->autoDiscoverExcludeRegExp = $regExp;
 
         return $this;
     }
@@ -116,6 +125,11 @@ class TypeScriptTransformerConfig
     public function getAutoDiscoverExcludePaths(): array
     {
         return $this->autoDiscoverExcludePaths;
+    }
+
+    public function getAutoDiscoverExcludeRegExp(): ?string
+    {
+        return $this->autoDiscoverExcludeRegExp;
     }
 
     /**@return \Spatie\TypeScriptTransformer\Transformers\Transformer[] */
