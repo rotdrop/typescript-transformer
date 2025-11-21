@@ -18,7 +18,7 @@ class DefaultCollector extends Collector
     {
         $reflector = ClassTypeReflector::create($class);
 
-        if (! $reflector->isTransformable()) {
+        if (! $this->shouldCollect($reflector)) {
             return null;
         }
 
@@ -32,6 +32,11 @@ class DefaultCollector extends Collector
         }
 
         return $transformedType;
+    }
+
+    protected function shouldCollect(ClassTypeReflector $reflector): bool
+    {
+        return $reflector->isTransformable();
     }
 
     protected function resolveAlreadyTransformedType(ClassTypeReflector $reflector): TransformedType
