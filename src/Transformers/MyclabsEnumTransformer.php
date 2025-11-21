@@ -20,7 +20,16 @@ class MyclabsEnumTransformer implements Transformer
             return null;
         }
 
-        return $this->config->shouldTransformToNativeEnums()
+        $shouldTransformToNativeEnums = $this->config->shouldTransformToNativeEnums();
+        $tsAttribute = $class->getAttributes(TypeScript::class);
+        if (!empty($tsAttribute)) {
+          $tsAttribute = $tsAttribute[0]->newInstance();
+          if (($tsAttribute->options['nativeEnums'] ?? null) !== null) {
+            $shouldTransformToNativeEnums = $tsAttribute->options['nativeEnums'];
+          }
+        }
+
+        return $shouldTransformToNativeEnums
             ? $this->toEnum($class, $name)
             : $this->toType($class, $name);
     }

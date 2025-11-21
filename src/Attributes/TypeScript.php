@@ -9,8 +9,11 @@ class TypeScript
 {
     public ?string $name;
 
-    public function __construct(?string $name = null)
+    public ?array $options;
+
+    public function __construct(?string $name = null, ?array $options = null)
     {
         $this->name = $name;
+        $this->options = $options;
     }
 }

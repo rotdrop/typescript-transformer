@@ -5,6 +5,7 @@ namespace Spatie\TypeScriptTransformer\Transformers;
 use ReflectionClass;
 use ReflectionEnum;
 use ReflectionEnumBackedCase;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
 use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
@@ -31,7 +32,16 @@ class EnumTransformer implements Transformer
             return null;
         }
 
-        return $this->config->shouldTransformToNativeEnums()
+        $shouldTransformToNativeEnums = $this->config->shouldTransformToNativeEnums();
+        $tsAttribute = $class->getAttributes(TypeScript::class);
+        if (!empty($tsAttribute)) {
+          $tsAttribute = $tsAttribute[0]->newInstance();
+          if (($tsAttribute->options['nativeEnums'] ?? null) !== null) {
+            $shouldTransformToNativeEnums = $tsAttribute->options['nativeEnums'];
+          }
+        }
+
+        return $shouldTransformToNativeEnums
             ? $this->toEnum($enum, $name)
             : $this->toType($enum, $name);
     }
