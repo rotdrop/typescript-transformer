@@ -12,6 +12,7 @@ use Spatie\TypeScriptTransformer\Structures\TypesCollection;
 use Spatie\TypeScriptTransformer\TypeProcessors\DtoCollectionTypeProcessor;
 use Spatie\TypeScriptTransformer\TypeProcessors\ReplaceDefaultsTypeProcessor;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
+use phpDocumentor\Reflection\Types\Nullable;
 
 class DtoTransformer implements Transformer
 {
@@ -67,20 +68,26 @@ class DtoTransformer implements Transformer
                     return $carry;
                 }
 
-                $isOptional = $isClassOptional
-                    || ! empty($property->getAttributes(Optional::class))
-                    || ($property->getType()?->allowsNull() && $nullablesAreOptional);
-
-                $transformed = $this->reflectionToTypeScript(
+                $type = $this->reflectionToType(
                     $property,
                     $missingSymbols,
-                    $isOptional,
-                    ...$this->typeProcessors()
+                    ...$this->typeProcessors(),
                 );
 
-                if ($transformed === null) {
+                if ($type === null) {
                     return $carry;
                 }
+
+                $isOptional = $isClassOptional
+                    || ! empty($property->getAttributes(Optional::class))
+                    || (($property->getType()?->allowsNull() ?? ($type instanceof Nullable)) && $nullablesAreOptional);
+
+                $transformed = $this->typeToTypeScript(
+                    $type,
+                    $missingSymbols,
+                    $isOptional,
+                    $property->getDeclaringClass()?->getName(),
+                );
 
                 $propertyName = $this->transformPropertyName($property, $missingSymbols);
 
