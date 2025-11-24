@@ -124,7 +124,7 @@ class DtoTransformer implements Transformer
     {
         return [
             new ReplaceDefaultsTypeProcessor(
-                $this->config->getDefaultTypeReplacements()
+                $this->config->getDefaultInlineTypeReplacements()
             ),
             new DtoCollectionTypeProcessor(),
         ];

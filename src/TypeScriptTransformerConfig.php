@@ -27,6 +27,8 @@ class TypeScriptTransformerConfig
 
     private array $defaultTypeReplacements = [];
 
+    private array $defaultInlineTypeReplacements = [];
+
     private string $writer = TypeDefinitionWriter::class;
 
     private ?string $formatter = null;
@@ -92,6 +94,13 @@ class TypeScriptTransformerConfig
     public function defaultTypeReplacements(array $defaultTypeReplacements): self
     {
         $this->defaultTypeReplacements = $defaultTypeReplacements;
+
+        return $this;
+    }
+
+    public function defaultInlineTypeReplacements(array $defaultInlineTypeReplacements): self
+    {
+        $this->defaultInlineTypeReplacements = $defaultInlineTypeReplacements;
 
         return $this;
     }
@@ -174,6 +183,25 @@ class TypeScriptTransformerConfig
         $replacements = [];
 
         foreach ($this->defaultTypeReplacements as $class => $replacement) {
+            if (! class_exists($class) && ! interface_exists($class)) {
+                throw InvalidDefaultTypeReplacer::classDoesNotExist($class);
+            }
+
+            $replacements[$class] = $replacement instanceof Type
+                ? $replacement
+                : $typeResolver->resolve($replacement);
+        }
+
+        return $replacements;
+    }
+
+    public function getDefaultInlineTypeReplacements(): array
+    {
+        $typeResolver = new TypeResolver();
+
+        $replacements = [];
+
+        foreach ($this->defaultInlineTypeReplacements as $class => $replacement) {
             if (! class_exists($class) && ! interface_exists($class)) {
                 throw InvalidDefaultTypeReplacer::classDoesNotExist($class);
             }

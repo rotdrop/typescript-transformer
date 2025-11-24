@@ -33,12 +33,33 @@ class ResolveTypesCollectionAction
     {
         $collection = new TypesCollection();
 
+        $defaultTypeReplacements = $this->config->getDefaultTypeReplacements();
         $paths = $this->config->getAutoDiscoverTypesPaths();
         $exclude = $this->config->getAutoDiscoverExcludePaths();
         $excludeRegExp = $this->config->getAutoDiscoverExcludeRegExp();
 
         if (empty($paths)) {
             throw NoAutoDiscoverTypesPathsDefined::create();
+        }
+
+        foreach ($this->config->getDefaultTypeReplacements() as $key => $type) {
+            $class = new ReflectionClass($key);
+
+            $collection[$key] = TransformedType::create(
+                $class,
+                $class->getShortName(),
+                (string)$type,
+            );
+        }
+        foreach ($this->config->getDefaultInlineTypeReplacements() as $key => $type) {
+            $class = new ReflectionClass($key);
+
+            $collection[$key] = TransformedType::create(
+                $class,
+                $class->getShortName(),
+                (string)$type,
+                inline: true,
+            );
         }
 
         foreach ($this->resolveIterator($paths, $exclude, $excludeRegExp) as $class) {
