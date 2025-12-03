@@ -20,7 +20,7 @@ class ReplaceSymbolsInTypeAction
 
     public function execute(TransformedType $type, array $chain = []): string
     {
-        if (in_array($type->getTypeScriptName(), $chain)) {
+        if (!empty($type->getTypeScriptName()) && in_array($type->getTypeScriptName(), $chain)) {
             $chain = array_merge($chain, [$type->getTypeScriptName()]);
 
             throw CircularDependencyChain::create($chain);
