@@ -15,6 +15,7 @@ use phpDocumentor\Reflection\Types\Mixed_;
 use phpDocumentor\Reflection\Types\Null_;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
+use phpDocumentor\Reflection\Types\Resource_;
 use phpDocumentor\Reflection\Types\Scalar;
 use phpDocumentor\Reflection\Types\Self_;
 use phpDocumentor\Reflection\Types\Static_;
@@ -60,8 +61,9 @@ class TranspileTypeToTypeScriptAction
             $type instanceof Null_ => 'null',
             $type instanceof Self_, $type instanceof Static_, $type instanceof This => $this->resolveSelfReferenceType(),
             $type instanceof Scalar => 'string|number|boolean',
-            $type instanceof Mixed_ => 'any',
+            $type instanceof Mixed_ => 'unknown',
             $type instanceof Void_ => 'void',
+            $type instanceof Resource_ => 'unknown', // ArrayBuffer would probably be too specific
             $type instanceof PseudoType => $this->execute($type->underlyingType()),
             default => throw new Exception("Could not transform type: {$type}")
         };
@@ -125,7 +127,7 @@ class TranspileTypeToTypeScriptAction
     private function resolveSelfReferenceType(): string
     {
         if ($this->currentClass === null) {
-            return 'any';
+            return 'unknown';
         }
 
         return $this->missingSymbolsCollection->add($this->currentClass);

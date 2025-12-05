@@ -10,6 +10,8 @@ class TransformedType
 
     public ?string $name = null;
 
+    public ?array $templateTypes = null;
+
     public string $transformed;
 
     public MissingSymbolsCollection $missingSymbols;
@@ -28,8 +30,9 @@ class TransformedType
         bool $inline = false,
         string $keyword = 'type',
         bool $trailingSemicolon = true,
+        ?array $templateTypes = null,
     ): self {
-        return new self($class, $name, $transformed, $missingSymbols ?? new MissingSymbolsCollection(), $inline, $keyword, $trailingSemicolon);
+        return new self($class, $name, $transformed, $missingSymbols ?? new MissingSymbolsCollection(), $inline, $keyword, $trailingSemicolon, $templateTypes);
     }
 
     public static function createInline(
@@ -48,6 +51,7 @@ class TransformedType
         bool $isInline,
         string $keyword = 'type',
         bool $trailingSemicolon = true,
+        ?array $templateTypes = null,
     ) {
         $this->reflection = $class;
         $this->name = $name;
@@ -56,6 +60,7 @@ class TransformedType
         $this->isInline = $isInline;
         $this->keyword = $keyword;
         $this->trailingSemicolon = $trailingSemicolon;
+        $this->templateTypes = $templateTypes;
     }
 
     public function getNamespaceSegments(): array
@@ -100,10 +105,15 @@ class TransformedType
 
     public function toString(): string
     {
+        if ($this->templateTypes && $this->keyword !== 'enum') {
+            $name = $this->name . '<' . implode(', ', $this->templateTypes) . '>';
+        } else {
+            $name = $this->name;
+        }
         $output = match ($this->keyword) {
-            'enum' => "enum {$this->name} { {$this->transformed} }",
-            'interface' => "interface {$this->name} {$this->transformed}",
-            default => "type {$this->name} = {$this->transformed}",
+            'enum' => "enum {$name} { {$this->transformed} }",
+            'interface' => "interface {$name} {$this->transformed}",
+            default => "type {$name} = {$this->transformed}",
         };
 
         return $output . ($this->trailingSemicolon ? ';' : '');
