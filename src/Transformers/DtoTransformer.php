@@ -6,6 +6,7 @@ use ReflectionClass;
 use ReflectionProperty;
 use Spatie\TypeScriptTransformer\Attributes\Hidden;
 use Spatie\TypeScriptTransformer\Attributes\Optional;
+use Spatie\TypeScriptTransformer\Attributes\TemplateParameters;
 use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
 use Spatie\TypeScriptTransformer\Structures\TypesCollection;
@@ -39,11 +40,24 @@ class DtoTransformer implements Transformer
             $this->transformExtra($class, $missingSymbols),
         ]);
 
+        $templateTypes = [];
+        $templateParameters = $class->getAttributes(TemplateParameters::class);
+        foreach ($templateParameters as $reflectionAttribute) {
+          $attribute = $reflectionAttribute->newInstance();
+          $parameters = $attribute->parameters;
+          if (is_string($parameters)) {
+            $templateTypes[] = $parameters;
+          } else {
+            $templateTypes = array_merge($templateTypes, $parameters);
+          }
+        }
+
         return TransformedType::create(
             $class,
             $name,
             "{" . PHP_EOL . $type . "  }",
-            $missingSymbols
+            $missingSymbols,
+            templateTypes: $templateTypes,
         );
     }
 
