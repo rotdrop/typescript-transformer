@@ -20,11 +20,11 @@ class LiteralTypeScriptType implements TypeScriptTransformableAttribute
     public function getType(): Type
     {
         if (is_string($this->typeScript)) {
-            return new TypeScriptType($this->typeScript);
+            return new TypeScriptType(str_replace('\\', '.', $this->typeScript));
         }
 
         $types = array_map(
-            fn (string $type) => new TypeScriptType($type),
+            fn (string $type) => new TypeScriptType(str_replace('\\', '.', $type)),
             $this->typeScript
         );
 
